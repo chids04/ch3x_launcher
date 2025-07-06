@@ -1,0 +1,41 @@
+{
+  "base-file": "\/Users\/chids\/Documents\/games\/wii games\/mkwii wimmfi.iso",
+  "display-name": "rr",
+  "riivolution": {
+    "patches": [
+      {
+        "options": [
+          {
+            "choice": 1,
+            "option-name": "Pack",
+            "section-name": "Retro Rewind"
+          },
+          {
+            "choice": 0,
+            "option-name": "Language",
+            "section-name": "Retro Rewind"
+          },
+          {
+            "choice": 0,
+            "option-name": "My Stuff",
+            "section-name": "Retro Rewind"
+          },
+          {
+            "choice": 0,
+            "option-name": "Remove Blur",
+            "section-name": "Retro Rewind"
+          },
+          {
+            "choice": 0,
+            "option-name": "Seperate Savegame",
+            "section-name": "Retro Rewind"
+          }
+        ],
+        "root": "\/Users\/chids\/Documents\/games\/wii games\/Retro Rewind 6.1 Hotfix",
+        "xml": "\/Users\/chids\/Documents\/games\/wii games\/Retro Rewind 6.1 Hotfix\/riivolution\/RetroRewind6.xml"
+      }
+    ]
+  },
+  "type": "dolphin-game-mod-descriptor",
+  "version": 1
+}

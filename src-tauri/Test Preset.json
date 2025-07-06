@@ -1,0 +1,1 @@
+{"base_file":"/\\/path\\/to\\/game.iso","display-name":"Test Preset","riivolution":{"patches":[{"options":[{"choice":0,"option-name":"Option 1","section-name":"Test Section"}],"root":"/\\/path\\/to","xml":"/\\/path\\/to\\/riivolution\\/test.xml"}]},"type":"dolphin-game-mod-descriptor","version":1}
