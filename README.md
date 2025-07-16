@@ -12,7 +12,7 @@ ch3x is a Tauri-based desktop application for managing and launching Dolphin emu
 - [Rust](https://www.rust-lang.org/tools/install)
 - [Node.js](https://nodejs.org/) (for the frontend)
 - [Dolphin Emulator](https://dolphin-emu.org/) (for running games)
-- [pnpm](https://pnpm.io/) or [npm](https://www.npmjs.com/) (for frontend dependencies)
+- [npm](https://www.npmjs.com/) (for frontend dependencies)
 
 ## Building the Project
 
@@ -22,8 +22,6 @@ ch3x is a Tauri-based desktop application for managing and launching Dolphin emu
 2. **Install Frontend Dependencies**
    - Navigate to the project root (where `package.json` is located):
      ```sh
-     pnpm install
-     # or
      npm install
      ```
 
