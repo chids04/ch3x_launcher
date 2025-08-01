@@ -1,15 +1,18 @@
-use tauri::{State};
 use serde_json::json;
-use std::sync::Mutex;
 use std::path::{PathBuf, Path};
 
+use crate::AppData;
+
+#[cfg(test)]
+use std::sync::Mutex;
+
+#[cfg(test)]  
 use crate::TauriState;
-use crate::AppState;
 
+//creates a json file that can be read by Dolphin
 
-
-pub fn create_json(app_state: &AppState, id: &str) -> Result<(), String>{
-    let preset = match app_state.presets.get(id){
+pub fn create_json(app_data: &AppData, id: &str) -> Result<(), String>{
+    let preset = match app_data.presets.get(id){
         Some(preset) => preset,
         None => return Err(String::from("preset not found, delete it")),
     };
@@ -99,12 +102,15 @@ mod tests {
         let app = tauri::test::mock_app();
 
         let mut mock_state = AppState{
-            game_dirs: Vec::new(),
-            presets: HashMap::new(),
-            dolphin_path: PathBuf::new(),
+            data: crate::AppData {
+                game_dirs: Vec::new(),
+                presets: HashMap::new(),
+                dolphin_path: PathBuf::new(),
+            },
+            dirty: false,
         };
 
-        mock_state.presets.insert(
+        mock_state.data.presets.insert(
             "test_id".to_string(),
             Preset {
                 id: "test_id".to_string(),
@@ -126,8 +132,8 @@ mod tests {
         app.manage(Mutex::new(mock_state));
 
         let state = app.state::<TauriState>();
-        let mut state = state.lock().unwrap();
-        let result = create_json(&mut state, "test_id");
+        let state = state.lock().unwrap();
+        let result = create_json(&state.data, "test_id");
 
         assert!(result.is_ok());
     }

@@ -1,75 +1,117 @@
 mod presets;
 mod gamedirs;       
 mod jsonbuilder;
-mod settings;
 
 use crate::presets::*;
 use crate::gamedirs::*;
 use crate::jsonbuilder::*;
-use crate::settings::*;
 
 use tauri::{Manager, State};
-use rusqlite::Connection;
+use serde::{Deserialize, Serialize};
 
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Mutex;
 use std::process::Command;
+use std::fs;
 
 
 pub type TauriState = Mutex<AppState>;
 
-pub const DB_PATH: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/state.db");
+pub const DATA_PATH: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/app_data.json");
 
-pub struct AppState {
+#[derive(Serialize, Deserialize, Clone)]
+pub struct AppData {
     pub presets: HashMap<String, Preset>,
     pub game_dirs: Vec<GameDir>,
     pub dolphin_path: PathBuf,
 }
 
-pub fn save_dolph_path(path: &str) -> Result<(), String> {
-    let conn = Connection::open(DB_PATH)
-        .map_err(|e| format!("Failed to open database connection: {}", e))?;
-
-    conn.execute(
-        "INSERT OR REPLACE INTO settings (key, value) VALUES (?1, ?2)",
-        rusqlite::params!["dolphin_path", path],
-    )
-    .map_err(|e| format!("Failed to save Dolphin path: {}", e))?;
-
-    Ok(())
+impl AppData {
+    pub fn load_or_default() -> Self {
+        let data_path = PathBuf::from(DATA_PATH);
+        
+        if data_path.exists() {
+            match fs::read_to_string(&data_path) {
+                Ok(content) => {
+                    match serde_json::from_str::<AppData>(&content) {
+                        Ok(data) => return data,
+                        Err(e) => eprintln!("Failed to parse app data: {}", e),
+                    }
+                }
+                Err(e) => eprintln!("Failed to read app data: {}", e),
+            }
+        }
+        
+        Self::default()
+    }
+    
+    pub fn save(&self) -> Result<(), String> {
+        let data_path = PathBuf::from(DATA_PATH);
+        
+        if let Some(parent) = data_path.parent() {
+            fs::create_dir_all(parent).map_err(|e| format!("Failed to create data directory: {}", e))?;
+        }
+        
+        let json = serde_json::to_string_pretty(self)
+            .map_err(|e| format!("Failed to serialize app data: {}", e))?;
+        
+        fs::write(&data_path, json)
+            .map_err(|e| format!("Failed to write app data: {}", e))?;
+        
+        Ok(())
+    }
 }
 
-pub fn load_dolph_path() -> Result<PathBuf, String> {
-    let conn = Connection::open(DB_PATH)
-        .map_err(|e| format!("Failed to open database connection: {}", e))?;
+impl Default for AppData {
+    fn default() -> Self {
+        Self {
+            presets: HashMap::new(),
+            game_dirs: Vec::new(),
+            dolphin_path: PathBuf::new(),
+        }
+    }
+}
 
-    let mut stmt = conn
-        .prepare("SELECT value FROM settings WHERE key = ?1")
-        .map_err(|e| format!("Failed to prepare statement: {}", e))?;
+pub struct AppState {
+    pub data: AppData,
+    pub dirty: bool,
+}
 
-    let path: String = stmt
-        .query_row(rusqlite::params!["dolphin_path"], |row| row.get(0))
-        .map_err(|e| format!("Failed to load Dolphin path: {}", e))?;
-
-    Ok(PathBuf::from(path))
+impl AppState {
+    pub fn new() -> Self {
+        Self {
+            data: AppData::load_or_default(),
+            dirty: false,
+        }
+    }
+    
+    pub fn save_if_dirty(&mut self) -> Result<(), String> {
+        if self.dirty {
+            self.data.save()?;
+            self.dirty = false;
+        }
+        Ok(())
+    }
+    
+    pub fn mark_dirty(&mut self) {
+        self.dirty = true;
+    }
 }
 
 #[tauri::command]
-fn set_dolph_path(state: State<TauriState>, path: &str) {
+fn set_dolph_path(state: State<TauriState>, path: &str) -> Result<(), String> {
     let mut app_state = state.lock().unwrap();
-    app_state.dolphin_path = PathBuf::from(path);
-    let _ = save_dolph_path(path).map_err(|e| {
-        eprintln!("failed to save dolph path {e}")
-    });
+    app_state.data.dolphin_path = PathBuf::from(path);
+    app_state.mark_dirty();
+    app_state.save_if_dirty()
 }
 
 
 #[tauri::command]
 fn get_dolph_path(state: State<TauriState>) -> PathBuf {
     let app_state = state.lock().unwrap();
-
-    app_state.dolphin_path.clone()
+    app_state.data.dolphin_path.clone()
 }
 
 
@@ -77,24 +119,17 @@ fn get_dolph_path(state: State<TauriState>) -> PathBuf {
 fn run_game(state: State<TauriState>, id: &str) -> Result<String, String> {
     let mut app_state = state.lock().unwrap();
 
-    //will need to add error checking here
-    app_state.dolphin_path = PathBuf::from("/Applications/Dolphin.app/Contents/MacOS/Dolphin");
-
-    if let Some(preset) = app_state.presets.get_mut(id){
+    if let Some(preset) = app_state.data.presets.get_mut(id){
         let preset_name = preset.name.clone();
-        let _ = create_json(&app_state, id)?;
+        let _ = create_json(&app_state.data, id)?;
         let mut json_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         json_path.push(format!("{}.json", preset_name));
 
-        
-
-        let child = Command::new(&app_state.dolphin_path)
+        let child = Command::new(&app_state.data.dolphin_path)
             .arg("-e")
             .arg(json_path)
             .spawn()
             .map_err(|e| format!("failed to execute dolphin {}", e))?;
-
-        
 
         return Ok(format!("started dolphin with pid: {}", child.id()));
         
@@ -102,7 +137,6 @@ fn run_game(state: State<TauriState>, id: &str) -> Result<String, String> {
     else{
         return Err(String::from("preset to run not found"));
     }
-    
 }
 
 
@@ -113,32 +147,7 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
         .setup(|app| {
-            initialise_db().expect("failed to create db");
-
-            let presets = Preset::load_from_db().unwrap_or_else(|e| {
-                eprintln!("Failed to load presets: {e}");
-                HashMap::new() 
-            });
-            
-
-            let game_dirs = GameDir::load_all_from_db().unwrap_or_else(|e| {
-                eprintln!("failed to load game directories: {e}");
-                Vec::new()
-            });
-
-            let dolphin_path = load_dolph_path().unwrap_or_else(|e| {
-                eprintln!("failed to load dolphin path {e}");
-                PathBuf::new()
-            });
-
-            
-            
-            let state = AppState {
-                presets,
-                game_dirs,
-                dolphin_path
-            };
-
+            let state = AppState::new();
             app.manage(Mutex::new(state));
             Ok(())
         })

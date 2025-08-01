@@ -5,7 +5,7 @@ ch3x is a Tauri-based desktop application for managing and launching Dolphin emu
 ## Features
 - Import Riivolution XML files and select mod options
 - Create and edit mod options
-- Save and load application state using SQLite
+- Save and load application state using JSON file persistence
 - Launch Dolphin emulator with selected preset and mod configuration
 
 ## Prerequisites
@@ -68,9 +68,10 @@ To run the built application:
    ```
 
 ## Notes
-- The application stores its SQLite database (`state.db`) in the same directory as `Cargo.toml`.
+- The application stores its data in a JSON file (`app_data.json`) in the same directory as `Cargo.toml`.
+- All application state (presets, game directories, settings) is automatically saved when changes are made.
 - Make sure Dolphin Emulator is installed and its path is set in the app settings.
-- On first run, the app will create the necessary database tables automatically.
+- On first run, the app will create the necessary JSON data file automatically.
 
 
 

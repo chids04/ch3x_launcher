@@ -27,7 +27,6 @@ debug = false
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
-rusqlite="0.28"
 tauri = { version = "2", features = ["test"] }
 tauri-plugin-opener = "2"
 serde = { version = "1", features = ["derive"] }

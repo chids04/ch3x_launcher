@@ -1,0 +1,212 @@
+{
+  "presets": {
+    "576eb453-3f73-4f55-b18f-406ab28999dc": {
+      "id": "576eb453-3f73-4f55-b18f-406ab28999dc",
+      "name": "rr",
+      "options": [
+        {
+          "name": "Pack",
+          "selected": "Enabled",
+          "choices": [
+            "Disabled",
+            "Enabled"
+          ]
+        },
+        {
+          "name": "Language",
+          "selected": "Japanese",
+          "choices": [
+            "Disabled",
+            "Japanese",
+            "French",
+            "German",
+            "Dutch",
+            "Spanish",
+            "Italian",
+            "Korean",
+            "Russian"
+          ]
+        },
+        {
+          "name": "My Stuff",
+          "selected": "Disabled",
+          "choices": [
+            "Disabled",
+            "CTGP",
+            "RR",
+            "CTGP Music",
+            "RR Music"
+          ]
+        },
+        {
+          "name": "Remove Blur",
+          "selected": "Disabled",
+          "choices": [
+            "Disabled",
+            "Enabled"
+          ]
+        },
+        {
+          "name": "Seperate Savegame",
+          "selected": "Disabled",
+          "choices": [
+            "Disabled",
+            "Enabled"
+          ]
+        }
+      ],
+      "created_at": [
+        2025,
+        189,
+        2,
+        27,
+        17,
+        316280000
+      ],
+      "game_path": "/Users/chids/Documents/games/wii games/MarioKart.iso",
+      "xml_path": "/Users/chids/Documents/games/wii games/Retro Rewind 6.1 Hotfix/RetroRewind6/xml/RetroRewind6.xml",
+      "section_name": " "
+    },
+    "9b14e1d5-718e-426f-90c5-eeec3b2a2f7c": {
+      "id": "9b14e1d5-718e-426f-90c5-eeec3b2a2f7c",
+      "name": "test",
+      "options": [
+        {
+          "name": "Pack",
+          "selected": "Disabled",
+          "choices": [
+            "Disabled",
+            "Enabled"
+          ]
+        },
+        {
+          "name": "Language",
+          "selected": "Disabled",
+          "choices": [
+            "Disabled",
+            "Japanese",
+            "French",
+            "German",
+            "Dutch",
+            "Spanish",
+            "Italian",
+            "Korean",
+            "Russian"
+          ]
+        },
+        {
+          "name": "My Stuff",
+          "selected": "Disabled",
+          "choices": [
+            "Disabled",
+            "CTGP",
+            "RR",
+            "CTGP Music",
+            "RR Music"
+          ]
+        },
+        {
+          "name": "Remove Blur",
+          "selected": "Disabled",
+          "choices": [
+            "Disabled",
+            "Enabled"
+          ]
+        },
+        {
+          "name": "Seperate Savegame",
+          "selected": "Disabled",
+          "choices": [
+            "Disabled",
+            "Enabled"
+          ]
+        }
+      ],
+      "created_at": [
+        2025,
+        189,
+        2,
+        49,
+        52,
+        184964000
+      ],
+      "game_path": "",
+      "xml_path": "/Users/chids/Documents/games/wii games/Retro Rewind 6.1 Hotfix/RetroRewind6/xml/RetroRewind6.xml",
+      "section_name": " "
+    },
+    "03ce0f77-9c49-47d8-8170-c2859c2336ed": {
+      "id": "03ce0f77-9c49-47d8-8170-c2859c2336ed",
+      "name": "test2",
+      "options": [
+        {
+          "name": "Pack",
+          "selected": "Disabled",
+          "choices": [
+            "Disabled",
+            "Enabled"
+          ]
+        },
+        {
+          "name": "Language",
+          "selected": "Disabled",
+          "choices": [
+            "Disabled",
+            "Japanese",
+            "French",
+            "German",
+            "Dutch",
+            "Spanish",
+            "Italian",
+            "Korean",
+            "Russian"
+          ]
+        },
+        {
+          "name": "My Stuff",
+          "selected": "Disabled",
+          "choices": [
+            "Disabled",
+            "CTGP",
+            "RR",
+            "CTGP Music",
+            "RR Music"
+          ]
+        },
+        {
+          "name": "Remove Blur",
+          "selected": "Disabled",
+          "choices": [
+            "Disabled",
+            "Enabled"
+          ]
+        },
+        {
+          "name": "Seperate Savegame",
+          "selected": "Disabled",
+          "choices": [
+            "Disabled",
+            "Enabled"
+          ]
+        }
+      ],
+      "created_at": [
+        2025,
+        189,
+        2,
+        56,
+        0,
+        171966000
+      ],
+      "game_path": "/Users/chids/Documents/games/wii games/MarioKart.iso",
+      "xml_path": "/Users/chids/Documents/games/wii games/Retro Rewind 6.1 Hotfix/riivolution/RetroRewind6.xml",
+      "section_name": "Retro Rewind"
+    }
+  },
+  "game_dirs": [
+    {
+      "name": "mkwii",
+      "path": "/Users/chids/Documents/games/wii games/MarioKart.iso"
+    }
+  ],
+  "dolphin_path": "/Applications/Dolphin.app/Contents/MacOS/Dolphin"
+}

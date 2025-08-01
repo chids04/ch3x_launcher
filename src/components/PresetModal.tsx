@@ -54,6 +54,8 @@ export default function PresetModal({ isOpen, onClose}: PresetModalProps) {
       }]
     });
 
+    
+
     if(file) {
       setXmlPath(file)
     }
