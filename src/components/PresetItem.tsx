@@ -20,12 +20,17 @@ export interface Options {
     choices: string[];
 }
 
-export default function PresetItem({preset} : {preset: Preset}) {
+interface PresetItemProps {
+    preset: Preset;
+    onRemove: (id: string) => void;
+}
+
+export default function PresetItem({preset, onRemove} : PresetItemProps) {
     const [error, setError] = useState("")
     const [gamePath, setGamePath] = useState("")
     const [dirName, setDirName] = useState("")
-
     
+    const [isHovered, setHovered] = useState(false)
 
     const handleSelection = async (value: string, name: string) => {
         try {
@@ -34,6 +39,18 @@ export default function PresetItem({preset} : {preset: Preset}) {
         catch(error){
             setError(String(error))
         }
+    }
+
+    const handleDeletePreset = async () => {
+        try {
+            await invoke("remove_preset", {id: preset.id})
+            onRemove(preset.id)
+        }
+        catch (error: any) {
+            showError(String(error))
+
+        }
+        
     }
 
     
@@ -58,7 +75,16 @@ export default function PresetItem({preset} : {preset: Preset}) {
 
     return (
         <>
-            <div className="flex flex-col w-full border-2 p-4 border-dashed border-amber-50">
+            <div className="flex flex-col relative w-full border-2 p-4 border-dashed border-amber-50"
+                onMouseEnter={() => setHovered(true)}
+                onMouseLeave={() => setHovered(false)}
+            >
+                {isHovered && 
+                    <div className="absolute top-1 left-1 select-none cursor-pointer"
+                        onClick={() => handleDeletePreset()}>
+                        X   
+                    </div>
+                }
                 <div className="flex flex-col gap-2">
                     <p className="text-center">{preset.name}</p>
                     <hr className="my-1 border-neutral-500" />

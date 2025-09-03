@@ -10,7 +10,6 @@ use std::sync::Mutex;
 use crate::TauriState;
 
 //creates a json file that can be read by Dolphin
-
 pub fn create_json(app_data: &AppData, id: &str) -> Result<(), String>{
     let preset = match app_data.presets.get(id){
         Some(preset) => preset,

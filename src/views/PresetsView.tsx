@@ -21,6 +21,11 @@ export default function PresetsView() {
     getPresets();
   }, [isModalOpen])
 
+  const removePreset = (id: string) => {
+        const new_presets = presets.filter(p => p.id !== id)
+        setPresets(new_presets)
+    }
+
     return (
         <>
             <div className="p-4">
@@ -39,6 +44,7 @@ export default function PresetsView() {
                         <PresetItem 
                             key={preset.id}
                             preset={preset}
+                            onRemove={removePreset}
                         />
                     ))}
                 </div>

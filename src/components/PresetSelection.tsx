@@ -19,7 +19,7 @@ export default function PresetSelection({options, handleSelection} : PresetSelec
 
     return (
         <div className="flex flex-row">
-            <div className="w-[150px] break-words mr-3">{options.name}</div>
+            <div className="w-[150px] min-w-[80px] wrap-normal smr-3">{options.name}</div>
             <Select  defaultValue={options.selected}  onValueChange={(value: string) => handleSelection(value, options.name)}>
                 <SelectTrigger className="w-full">
                     <SelectValue placeholder="select an option"/>

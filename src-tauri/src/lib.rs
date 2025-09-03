@@ -1,103 +1,19 @@
 mod presets;
 mod gamedirs;       
 mod jsonbuilder;
+mod state;
 
 use crate::presets::*;
 use crate::gamedirs::*;
 use crate::jsonbuilder::*;
+use crate::state::*;
 
 use tauri::{Manager, State};
-use serde::{Deserialize, Serialize};
 
-use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Mutex;
 use std::process::Command;
-use std::fs;
 
-
-pub type TauriState = Mutex<AppState>;
-
-pub const DATA_PATH: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/app_data.json");
-
-#[derive(Serialize, Deserialize, Clone)]
-pub struct AppData {
-    pub presets: HashMap<String, Preset>,
-    pub game_dirs: Vec<GameDir>,
-    pub dolphin_path: PathBuf,
-}
-
-impl AppData {
-    pub fn load_or_default() -> Self {
-        let data_path = PathBuf::from(DATA_PATH);
-        
-        if data_path.exists() {
-            match fs::read_to_string(&data_path) {
-                Ok(content) => {
-                    match serde_json::from_str::<AppData>(&content) {
-                        Ok(data) => return data,
-                        Err(e) => eprintln!("Failed to parse app data: {}", e),
-                    }
-                }
-                Err(e) => eprintln!("Failed to read app data: {}", e),
-            }
-        }
-        
-        Self::default()
-    }
-    
-    pub fn save(&self) -> Result<(), String> {
-        let data_path = PathBuf::from(DATA_PATH);
-        
-        if let Some(parent) = data_path.parent() {
-            fs::create_dir_all(parent).map_err(|e| format!("Failed to create data directory: {}", e))?;
-        }
-        
-        let json = serde_json::to_string_pretty(self)
-            .map_err(|e| format!("Failed to serialize app data: {}", e))?;
-        
-        fs::write(&data_path, json)
-            .map_err(|e| format!("Failed to write app data: {}", e))?;
-        
-        Ok(())
-    }
-}
-
-impl Default for AppData {
-    fn default() -> Self {
-        Self {
-            presets: HashMap::new(),
-            game_dirs: Vec::new(),
-            dolphin_path: PathBuf::new(),
-        }
-    }
-}
-
-pub struct AppState {
-    pub data: AppData,
-    pub dirty: bool,
-}
-
-impl AppState {
-    pub fn new() -> Self {
-        Self {
-            data: AppData::load_or_default(),
-            dirty: false,
-        }
-    }
-    
-    pub fn save_if_dirty(&mut self) -> Result<(), String> {
-        if self.dirty {
-            self.data.save()?;
-            self.dirty = false;
-        }
-        Ok(())
-    }
-    
-    pub fn mark_dirty(&mut self) {
-        self.dirty = true;
-    }
-}
 
 #[tauri::command]
 fn set_dolph_path(state: State<TauriState>, path: &str) -> Result<(), String> {
@@ -107,6 +23,25 @@ fn set_dolph_path(state: State<TauriState>, path: &str) -> Result<(), String> {
     app_state.save_if_dirty()
 }
 
+#[tauri::command]
+fn remove_preset(state: State<TauriState>, id: &str) -> Result<(), String> {
+    dbg!("deleting preset");
+
+    let mut app_state = state.lock().unwrap();
+
+    if app_state.data.presets.contains_key(id) {
+        app_state.data.presets.remove(id);
+
+        if let Err(e) = app_state.data.save() {
+            return Err(e);
+        }
+
+        Ok(())
+    }
+    else {
+        return Err("Failed to remove preset, preset already deleted".into());
+    }
+}
 
 #[tauri::command]
 fn get_dolph_path(state: State<TauriState>) -> PathBuf {
@@ -154,7 +89,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![create_preset, get_presets, 
             set_selection, create_gamedir, get_gamedirs, 
             remove_gamedir, set_game_path, get_path_name, run_game,
-            get_dolph_path, set_dolph_path])
+            get_dolph_path, set_dolph_path, remove_preset])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

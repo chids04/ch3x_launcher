@@ -53,12 +53,6 @@ export default function GameTable({games, handleDelete}: GameTableArgs) {
                 ))}
                 </TableBody>
             </Table>
-
-            {/* <ContextMenuContent className="w-52">
-                <ContextMenuItem className="text-red-500" onSelect={() => alert(selected?.toString())}>
-                Delete Invoice
-                </ContextMenuItem>
-            </ContextMenuContent> */}
         </ContextMenu>
         
     )
